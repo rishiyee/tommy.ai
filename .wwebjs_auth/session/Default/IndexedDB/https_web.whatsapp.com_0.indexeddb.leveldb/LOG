@@ -1,0 +1,24 @@
+2025/04/15-17:10:04.630 5288 Reusing MANIFEST C:\Users\Hrishi\Downloads\Ai\.wwebjs_auth\session\Default\IndexedDB\https_web.whatsapp.com_0.indexeddb.leveldb/MANIFEST-000001
+2025/04/15-17:10:04.631 5288 Recovering log #51
+2025/04/15-17:10:04.654 5288 Reusing old log C:\Users\Hrishi\Downloads\Ai\.wwebjs_auth\session\Default\IndexedDB\https_web.whatsapp.com_0.indexeddb.leveldb/000051.log 
+2025/04/15-17:10:04.654 5288 Delete type=2 #47
+2025/04/15-17:10:04.654 5288 Delete type=2 #53
+2025/04/15-17:10:06.541 44d8 Level-0 table #57: started
+2025/04/15-17:10:06.547 44d8 Level-0 table #57: 167602 bytes OK
+2025/04/15-17:10:06.548 44d8 Delete type=0 #51
+2025/04/15-17:10:06.548 2e48 Manual compaction at level-0 from '\x00!\x00\x00\x00' @ 72057594037927935 : 1 .. '\x00"\x00\x00\x00' @ 0 : 0; will stop at (end)
+2025/04/15-17:10:06.551 44d8 Level-0 table #59: started
+2025/04/15-17:10:06.564 44d8 Level-0 table #59: 455 bytes OK
+2025/04/15-17:10:06.565 44d8 Delete type=0 #56
+2025/04/15-17:10:06.566 44d8 Manual compaction at level-0 from '\x00"\x00\x00\x00' @ 72057594037927935 : 1 .. '\x00#\x00\x00\x00' @ 0 : 0; will stop at '\x00"\x00\x00\x05' @ 237266 : 0
+2025/04/15-17:10:06.566 44d8 Compacting 1@0 + 1@1 files
+2025/04/15-17:10:06.576 44d8 Generated table #60@0: 4329 keys, 89847 bytes
+2025/04/15-17:10:06.576 44d8 Compacted 1@0 + 1@1 files => 89847 bytes
+2025/04/15-17:10:06.576 44d8 compacted to: files[ 0 1 1 0 0 0 0 ]
+2025/04/15-17:10:06.577 44d8 Delete type=2 #59
+2025/04/15-17:10:06.577 44d8 Manual compaction at level-0 from '\x00"\x00\x00\x05' @ 237266 : 0 .. '\x00#\x00\x00\x00' @ 0 : 0; will stop at (end)
+2025/04/15-17:10:08.556 5288 Compacting 1@1 + 1@2 files
+2025/04/15-17:10:08.650 5288 Generated table #61@1: 46109 keys, 1810419 bytes
+2025/04/15-17:10:08.650 5288 Compacted 1@1 + 1@2 files => 1810419 bytes
+2025/04/15-17:10:08.651 5288 compacted to: files[ 0 0 1 0 0 0 0 ]
+2025/04/15-17:10:08.651 5288 Delete type=2 #57
