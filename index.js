@@ -86,7 +86,7 @@ client.on('ready', () => {
     } catch (err) {
       console.error('❌ Ping failed:', err.message);
     }
-  }, 13 * 60 * 1000);
+  }, 1 * 60 * 1000);
 });
 
 client.on('message', async (message) => {
