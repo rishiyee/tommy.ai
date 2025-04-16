@@ -7,9 +7,7 @@ import express from 'express';
 import dotenv from 'dotenv';
 import { GoogleGenerativeAI } from '@google/generative-ai';
 
-dotenv.config({
-    path: '.env'
-});
+dotenv.config({ path: '.env' });
 
 const { Client, MessageMedia, LocalAuth } = pkg;
 const __filename = fileURLToPath(import.meta.url);
@@ -27,8 +25,11 @@ async function getAIResponse(userMessage) {
   const prompt = `You are a helpful and polite assistant for a boutique resort called Chembarathi Wayanad.\n\n` +
                  `Context:\n${botContext}\n\n` +
                  `User asked:\n${userMessage}\n\n` +
-                 `Reply in a friendly, informative way.` +
-                 `you should send message very readable by adding emojis and text styles`;
+                 `Reply in a friendly, informative way.\n` +
+                 `the lists should be more readle by adding the bulletpoints\n` +
+                 `You should send message very readable by adding emojis and text styles. \n ` +
+                 `the replies should be less that 40 words`;
+                 `You should send message very readable by adding emojis and text styles.`;
 
   const result = await model.generateContent({ contents: [{ parts: [{ text: prompt }] }] });
   const response = await result.response;
@@ -49,6 +50,24 @@ const app = express();
 const port = process.env.PORT || 4000;
 app.use(express.static(path.join(__dirname, 'images')));
 
+// Room image folders mapped to keywords
+const imageFolders = {
+  'deluxe lawn view': 'deluxe_lawn_view',
+  'premium mountain view': 'premium_mountain_view',
+  'pool villa': 'pool_villa',
+  'deluxe pool forest view': 'deluxe_pool_forest_view',
+  'honeymoon suite': 'honeymoon_suite',
+  'premium pool mountain view': 'premium_pool_mountain_view'
+};
+
+// Log function to backup to log.txt
+function logToFile(logMessage) {
+  const logPath = path.join(__dirname, 'log.txt');
+  const timestamp = new Date().toLocaleString();
+  const logEntry = `[${timestamp}] ${logMessage}\n`;
+  fs.appendFileSync(logPath, logEntry, 'utf8');
+}
+
 client.on('qr', (qr) => {
   console.log('QR RECEIVED, scan this with your WhatsApp app:');
   qrcode.generate(qr, { small: true });
@@ -56,17 +75,72 @@ client.on('qr', (qr) => {
 
 client.on('ready', () => {
   console.log('✅ WhatsApp client is ready!');
+
+  // Ping every 13 minutes
+  const targetNumber = '918547838091@c.us';
+  setInterval(async () => {
+    try {
+      const chat = await client.getChatById(targetNumber);
+      await chat.sendMessage('👋 Ping to keep the bot alive!');
+      console.log('✅ Ping message sent');
+    } catch (err) {
+      console.error('❌ Ping failed:', err.message);
+    }
+  }, 13 * 60 * 1000);
 });
 
-// Handle incoming messages with AI only
 client.on('message', async (message) => {
   const chat = await message.getChat();
-  const msg = message.body.trim();
+  const msg = message.body.trim().toLowerCase();
+  const sender = message.from;
+  const time = new Date().toLocaleString();
 
-  console.log(`[${new Date().toLocaleString()}] Message from ${message.from}: ${msg}`);
+  // Log the incoming message to log.txt
+  logToFile(`📩 [${time}] Message from ${sender}: ${message.body}`);
 
+  // Define keywords for image trigger
+  const imageTriggerWords = ['photo', 'photos', 'images', 'img', 'pics', 'pictures', 'pic'];
+  const roomOptions = Object.keys(imageFolders);
+
+  // If the message is a photo/image trigger
+  if (imageTriggerWords.some(word => msg.includes(word))) {
+    let list = `🖼️ Here are our room options:\n\n`;
+    roomOptions.forEach((room, index) => {
+      list += `${index + 1}. ${room.charAt(0).toUpperCase() + room.slice(1)}\n`;
+    });
+    list += `\n📸 Please reply with the *room name* or *option number* to view images.`;
+
+    // Log the bot's reply to log.txt
+    logToFile(`🤖 Bot Reply (image menu):\n${list}`);
+    await chat.sendMessage(list);
+    return;
+  }
+
+  // If the message is a room name or number
+  const index = parseInt(msg) - 1;
+  const roomKey = index >= 0 && index < roomOptions.length ? roomOptions[index] : msg;
+
+  if (imageFolders[roomKey]) {
+    const folderPath = path.join(__dirname, 'images', imageFolders[roomKey]);
+    const images = fs.readdirSync(folderPath);
+
+    for (const image of images) {
+      const imagePath = path.join(folderPath, image);
+      const media = MessageMedia.fromFilePath(imagePath);
+      await chat.sendMessage(media);
+
+      // Log the bot's sent image to log.txt
+      logToFile(`🖼️ Sent image: ${imagePath}`);
+    }
+    return;
+  }
+
+  // Otherwise use Gemini AI
   try {
     const aiReply = await getAIResponse(msg);
+
+    // Log the AI response to log.txt
+    logToFile(`🤖 Bot Reply (AI):\n${aiReply}`);
     await chat.sendMessage(aiReply);
   } catch (err) {
     console.error('AI Error:', err);
@@ -74,7 +148,6 @@ client.on('message', async (message) => {
   }
 });
 
-// Start server and client
 client.initialize();
 app.listen(port, () => {
   console.log(`🚀 Express server running on port ${port}`);

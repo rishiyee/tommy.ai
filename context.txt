@@ -1,6 +1,7 @@
-Welcome to Chembarathi Wayanad!
-Namaste from Chembarathi, Wayanad! We offer a tranquil escape with cozy cottages, nestled in the serene hills of Wayanad, Kerala.
 
+Namaste from Chembarathi, Wayanad!
+We're here to help with bookings, room info, rates, and more.
+How can I assist you today? 😊
 
 
 Room Details
@@ -21,7 +22,7 @@ Tariff Details
 -Premium Cottages: ₹8,500
 -Deluxe Cottages: ₹8,000
 -Honeymoon Suite: ₹15,000
--Private Pool Villa: ₹13,000
+-Private Pool Villa: ₹14,000
 
 
 All cottages include:

@@ -1,0 +1,40 @@
+[16/04/2025, 9:22:15 am] 📩 [16/04/2025, 9:22:14 am] Message from 918547838091@c.us: haiihello
+[16/04/2025, 9:22:17 am] 🤖 Bot Reply (AI):
+Haiii! 👋  How can I help you today? 😊  We have lovely cottages! ✨ Check out our website for details & photos!  Let me know your needs!
+
+[16/04/2025, 9:22:23 am] 📩 [16/04/2025, 9:22:23 am] Message from 918547838091@c.us: rates
+[16/04/2025, 9:22:25 am] 🤖 Bot Reply (AI):
+Namaste! 😊
+
+Here are our rates:
+
+* Premium Cottages: ₹8,500
+* Deluxe Cottages: ₹8,000
+* Honeymoon Suite: ₹15,000
+* Pool Villa: ₹14,000
+
+All include breakfast! ☀️
+
+[16/04/2025, 9:22:27 am] 📩 [16/04/2025, 9:22:27 am] Message from 918547838091@c.us: images
+[16/04/2025, 9:22:27 am] 🤖 Bot Reply (image menu):
+🖼️ Here are our room options:
+
+1. Deluxe lawn view
+2. Premium mountain view
+3. Pool villa
+4. Deluxe pool forest view
+5. Honeymoon suite
+6. Premium pool mountain view
+
+📸 Please reply with the *room name* or *option number* to view images.
+[16/04/2025, 9:22:31 am] 📩 [16/04/2025, 9:22:31 am] Message from 918547838091@c.us: 1
+[16/04/2025, 9:22:31 am] 🖼️ Sent image: C:\Users\USER\Desktop\Bot\tommy.ai\images\deluxe_lawn_view\WhatsApp Image 2025-04-14 at 9.30.20 PM.jpeg
+[16/04/2025, 9:22:31 am] 🖼️ Sent image: C:\Users\USER\Desktop\Bot\tommy.ai\images\deluxe_lawn_view\WhatsApp Image 2025-04-14 at 9.30.41 PM (1).jpeg
+[16/04/2025, 9:22:31 am] 🖼️ Sent image: C:\Users\USER\Desktop\Bot\tommy.ai\images\deluxe_lawn_view\WhatsApp Image 2025-04-14 at 9.30.41 PM.jpeg
+[16/04/2025, 9:22:31 am] 🖼️ Sent image: C:\Users\USER\Desktop\Bot\tommy.ai\images\deluxe_lawn_view\WhatsApp Image 2025-04-14 at 9.30.42 PM.jpeg
+[16/04/2025, 9:22:32 am] 🖼️ Sent image: C:\Users\USER\Desktop\Bot\tommy.ai\images\deluxe_lawn_view\WhatsApp Image 2025-04-14 at 9.30.56 PM (1).jpeg
+[16/04/2025, 9:22:32 am] 🖼️ Sent image: C:\Users\USER\Desktop\Bot\tommy.ai\images\deluxe_lawn_view\WhatsApp Image 2025-04-14 at 9.30.56 PM.jpeg
+[16/04/2025, 9:22:32 am] 🖼️ Sent image: C:\Users\USER\Desktop\Bot\tommy.ai\images\deluxe_lawn_view\WhatsApp Image 2025-04-14 at 9.30.57 PM (1).jpeg
+[16/04/2025, 9:22:32 am] 🖼️ Sent image: C:\Users\USER\Desktop\Bot\tommy.ai\images\deluxe_lawn_view\WhatsApp Image 2025-04-14 at 9.30.57 PM.jpeg
+[16/04/2025, 9:22:32 am] 🖼️ Sent image: C:\Users\USER\Desktop\Bot\tommy.ai\images\deluxe_lawn_view\WhatsApp Image 2025-04-14 at 9.30.58 PM (1).jpeg
+[16/04/2025, 9:22:32 am] 🖼️ Sent image: C:\Users\USER\Desktop\Bot\tommy.ai\images\deluxe_lawn_view\WhatsApp Image 2025-04-14 at 9.30.59 PM (1).jpeg
