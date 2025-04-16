@@ -22,16 +22,26 @@ const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
 const model = genAI.getGenerativeModel({ model: 'gemini-1.5-flash' });
 
 async function getAIResponse(userMessage) {
-  const prompt = `You are a helpful and polite assistant for a boutique resort called Chembarathi Wayanad.\n\n` +
-                 `Context:\n${botContext}\n\n` +
-                 `User asked:\n${userMessage}\n\n` +
-                 `Reply in a friendly, informative way.\n` +
-                 `the lists should be more readle by adding the bulletpoints\n` +
-                 `You should send message very readable by adding emojis and text styles. \n ` +
-                 `the replies should be less that 40 words`;
-                 `You should send message very readable by adding emojis and text styles.`;
+  const prompt = `You are a helpful and polite assistant for a boutique resort called Chembarathi Wayanad.
 
-  const result = await model.generateContent({ contents: [{ parts: [{ text: prompt }] }] });
+Context:
+${botContext}
+
+User asked:
+${userMessage}
+
+Guidelines for reply:
+- Be friendly, informative, and under 40 words.
+- Use emojis and text formatting (like *bold* or _italics_) to improve readability.
+- Use bullet points when listing items.
+- Prices must be in *bold* and formatted like in the context.
+- If the user asks about booking, say: _"Our team will contact you soon to confirm the booking."_ 
+- ❗ Never confirm a booking yourself. Just provide info or say someone will reach out.`;
+
+  const result = await model.generateContent({
+    contents: [{ parts: [{ text: prompt }] }],
+  });
+
   const response = await result.response;
   return response.text();
 }
@@ -110,7 +120,6 @@ client.on('message', async (message) => {
     });
     list += `\n📸 Please reply with the *room name* or *option number* to view images.`;
 
-    // Log the bot's reply to log.txt
     logToFile(`🤖 Bot Reply (image menu):\n${list}`);
     await chat.sendMessage(list);
     return;
@@ -129,7 +138,6 @@ client.on('message', async (message) => {
       const media = MessageMedia.fromFilePath(imagePath);
       await chat.sendMessage(media);
 
-      // Log the bot's sent image to log.txt
       logToFile(`🖼️ Sent image: ${imagePath}`);
     }
     return;
@@ -138,8 +146,6 @@ client.on('message', async (message) => {
   // Otherwise use Gemini AI
   try {
     const aiReply = await getAIResponse(msg);
-
-    // Log the AI response to log.txt
     logToFile(`🤖 Bot Reply (AI):\n${aiReply}`);
     await chat.sendMessage(aiReply);
   } catch (err) {

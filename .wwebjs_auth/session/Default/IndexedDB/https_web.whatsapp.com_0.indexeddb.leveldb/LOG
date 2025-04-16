@@ -1,15 +1,15 @@
-2025/04/16-09:22:03.237 75bc Reusing MANIFEST C:\Users\USER\Desktop\Bot\tommy.ai\.wwebjs_auth\session\Default\IndexedDB\https_web.whatsapp.com_0.indexeddb.leveldb/MANIFEST-000001
-2025/04/16-09:22:03.237 75bc Recovering log #199
-2025/04/16-09:22:03.357 75bc Reusing old log C:\Users\USER\Desktop\Bot\tommy.ai\.wwebjs_auth\session\Default\IndexedDB\https_web.whatsapp.com_0.indexeddb.leveldb/000199.log 
-2025/04/16-09:22:05.174 75bc Level-0 table #205: started
-2025/04/16-09:22:05.195 75bc Level-0 table #205: 538419 bytes OK
-2025/04/16-09:22:05.198 75bc Delete type=0 #199
-2025/04/16-09:22:05.199 75bc Manual compaction at level-0 from '\x00@\x00\x00\x00' @ 72057594037927935 : 1 .. '\x00A\x00\x00\x00' @ 0 : 0; will stop at (end)
-2025/04/16-09:22:07.405 75bc Compacting 1@1 + 2@2 files
-2025/04/16-09:22:07.498 75bc Generated table #206@1: 40166 keys, 2218579 bytes
-2025/04/16-09:22:07.562 75bc Generated table #207@1: 28469 keys, 744848 bytes
-2025/04/16-09:22:07.562 75bc Compacted 1@1 + 2@2 files => 2963427 bytes
-2025/04/16-09:22:07.564 75bc compacted to: files[ 0 0 2 0 0 0 0 ]
-2025/04/16-09:22:07.565 75bc Delete type=2 #201
-2025/04/16-09:22:07.565 75bc Delete type=2 #202
-2025/04/16-09:22:07.565 75bc Delete type=2 #205
+2025/04/16-15:45:39.853 4150 Reusing MANIFEST C:\Users\USER\Desktop\Bot\tommy.ai\.wwebjs_auth\session\Default\IndexedDB\https_web.whatsapp.com_0.indexeddb.leveldb/MANIFEST-000001
+2025/04/16-15:45:39.854 4150 Recovering log #128
+2025/04/16-15:45:39.888 4150 Reusing old log C:\Users\USER\Desktop\Bot\tommy.ai\.wwebjs_auth\session\Default\IndexedDB\https_web.whatsapp.com_0.indexeddb.leveldb/000128.log 
+2025/04/16-15:45:42.020 5ef8 Level-0 table #134: started
+2025/04/16-15:45:42.034 5ef8 Level-0 table #134: 210384 bytes OK
+2025/04/16-15:45:42.037 5ef8 Delete type=0 #128
+2025/04/16-15:45:42.037 5ef8 Manual compaction at level-0 from '\x002\x00\x00\x00' @ 72057594037927935 : 1 .. '\x003\x00\x00\x00' @ 0 : 0; will stop at (end)
+2025/04/16-15:45:46.357 63a8 Compacting 1@1 + 2@2 files
+2025/04/16-15:45:46.457 63a8 Generated table #135@1: 34669 keys, 2190938 bytes
+2025/04/16-15:45:46.566 63a8 Generated table #136@1: 42717 keys, 1348834 bytes
+2025/04/16-15:45:46.566 63a8 Compacted 1@1 + 2@2 files => 3539772 bytes
+2025/04/16-15:45:46.568 63a8 compacted to: files[ 0 0 2 0 0 0 0 ]
+2025/04/16-15:45:46.569 63a8 Delete type=2 #130
+2025/04/16-15:45:46.569 63a8 Delete type=2 #131
+2025/04/16-15:45:46.569 63a8 Delete type=2 #134
