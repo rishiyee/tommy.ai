@@ -1,3 +1,2 @@
-2025/04/17-04:04:38.597 5412 Reusing MANIFEST /workspaces/tommy.ai/.wwebjs_auth/session/Default/Session Storage/MANIFEST-000001
-2025/04/17-04:04:38.598 5412 Recovering log #3
-2025/04/17-04:04:38.599 5412 Reusing old log /workspaces/tommy.ai/.wwebjs_auth/session/Default/Session Storage/000003.log 
+2025/04/22-11:52:24.605 143a Creating DB /workspaces/tommy.ai/.wwebjs_auth/session/Default/Session Storage since it was missing.
+2025/04/22-11:52:24.611 143a Reusing MANIFEST /workspaces/tommy.ai/.wwebjs_auth/session/Default/Session Storage/MANIFEST-000001

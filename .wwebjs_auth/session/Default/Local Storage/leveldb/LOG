@@ -1,8 +1,2 @@
-2025/04/17-04:04:38.075 540e Reusing MANIFEST /workspaces/tommy.ai/.wwebjs_auth/session/Default/Local Storage/leveldb/MANIFEST-000001
-2025/04/17-04:04:38.075 540e Recovering log #4
-2025/04/17-04:04:38.075 540e Level-0 table #7: started
-2025/04/17-04:04:38.164 540e Level-0 table #7: 1223 bytes OK
-2025/04/17-04:04:38.164 540e Recovering log #11
-2025/04/17-04:04:38.164 540e Reusing old log /workspaces/tommy.ai/.wwebjs_auth/session/Default/Local Storage/leveldb/000011.log 
-2025/04/17-04:04:38.169 540e Delete type=0 #4
-2025/04/17-04:04:38.169 540e Delete type=2 #10
+2025/04/22-11:52:24.114 1439 Creating DB /workspaces/tommy.ai/.wwebjs_auth/session/Default/Local Storage/leveldb since it was missing.
+2025/04/22-11:52:24.170 1439 Reusing MANIFEST /workspaces/tommy.ai/.wwebjs_auth/session/Default/Local Storage/leveldb/MANIFEST-000001
