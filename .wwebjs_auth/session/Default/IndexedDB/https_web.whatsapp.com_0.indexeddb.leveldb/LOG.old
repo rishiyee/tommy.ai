@@ -1,0 +1,26 @@
+2025/04/22-12:01:00.631 25a5 Reusing MANIFEST /workspaces/tommy.ai/.wwebjs_auth/session/Default/IndexedDB/https_web.whatsapp.com_0.indexeddb.leveldb/MANIFEST-000001
+2025/04/22-12:01:00.632 25a5 Recovering log #62
+2025/04/22-12:01:00.647 25a5 Reusing old log /workspaces/tommy.ai/.wwebjs_auth/session/Default/IndexedDB/https_web.whatsapp.com_0.indexeddb.leveldb/000062.log 
+2025/04/22-12:01:02.431 25ad Level-0 table #69: started
+2025/04/22-12:01:02.445 25ad Level-0 table #69: 247745 bytes OK
+2025/04/22-12:01:02.446 25ad Delete type=0 #62
+2025/04/22-12:01:02.447 25a4 Manual compaction at level-0 from '\x00\x1b\x00\x00\x00' @ 72057594037927935 : 1 .. '\x00\x1c\x00\x00\x00' @ 0 : 0; will stop at (end)
+2025/04/22-12:01:02.458 25a4 Level-0 table #71: started
+2025/04/22-12:01:02.465 25a4 Level-0 table #71: 302 bytes OK
+2025/04/22-12:01:02.471 25a4 Delete type=0 #68
+2025/04/22-12:01:02.471 25a4 Manual compaction at level-0 from '\x00\x1c\x00\x00\x00' @ 72057594037927935 : 1 .. '\x00\x1d\x00\x00\x00' @ 0 : 0; will stop at '\x00\x1c\x00\x00\x05' @ 274448 : 0
+2025/04/22-12:01:02.471 25a4 Compacting 1@0 + 1@1 files
+2025/04/22-12:01:02.489 25a4 Generated table #72@0: 5551 keys, 114607 bytes
+2025/04/22-12:01:02.489 25a4 Compacted 1@0 + 1@1 files => 114607 bytes
+2025/04/22-12:01:02.493 25a4 compacted to: files[ 0 1 2 0 0 0 0 ]
+2025/04/22-12:01:02.494 25a4 Manual compaction at level-0 from '\x00\x1c\x00\x00\x05' @ 274448 : 0 .. '\x00\x1d\x00\x00\x00' @ 0 : 0; will stop at (end)
+2025/04/22-12:01:04.577 25a4 Compacting 1@1 + 2@2 files
+2025/04/22-12:01:04.661 25a4 Generated table #73@1: 32974 keys, 2211113 bytes
+2025/04/22-12:01:04.728 25a4 Generated table #74@1: 29083 keys, 725034 bytes
+2025/04/22-12:01:04.729 25a4 Compacted 1@1 + 2@2 files => 2936147 bytes
+2025/04/22-12:01:04.733 25a4 compacted to: files[ 0 0 2 0 0 0 0 ]
+2025/04/22-12:01:04.734 25a4 Delete type=2 #65
+2025/04/22-12:01:04.734 25a4 Delete type=2 #69
+2025/04/22-12:01:04.734 25a4 Delete type=2 #71
+2025/04/22-12:01:04.734 25a4 Delete type=2 #72
+2025/04/22-12:01:04.734 25a4 Delete type=2 #66

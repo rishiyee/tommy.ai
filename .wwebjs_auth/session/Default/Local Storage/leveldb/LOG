@@ -1,2 +1,3 @@
-2025/04/22-11:52:24.114 1439 Creating DB /workspaces/tommy.ai/.wwebjs_auth/session/Default/Local Storage/leveldb since it was missing.
-2025/04/22-11:52:24.170 1439 Reusing MANIFEST /workspaces/tommy.ai/.wwebjs_auth/session/Default/Local Storage/leveldb/MANIFEST-000001
+2025/04/22-12:01:23.183 2708 Reusing MANIFEST /workspaces/tommy.ai/.wwebjs_auth/session/Default/Local Storage/leveldb/MANIFEST-000001
+2025/04/22-12:01:23.183 2708 Recovering log #3
+2025/04/22-12:01:23.183 2708 Reusing old log /workspaces/tommy.ai/.wwebjs_auth/session/Default/Local Storage/leveldb/000003.log 

@@ -13,11 +13,9 @@ const { Client, MessageMedia, LocalAuth } = pkg;
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-// Load context from context.txt
 const contextPath = path.join(__dirname, 'context.txt');
 const botContext = fs.readFileSync(contextPath, 'utf8');
 
-// Gemini AI setup
 const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
 const model = genAI.getGenerativeModel({ model: 'gemini-1.5-flash' });
 
@@ -35,6 +33,7 @@ Guidelines for reply:
 - Use emojis and text formatting (like *bold* or _italics_) to improve readability.
 - Use bullet points when listing items.
 - Prices must be in *bold* and formatted like in the context.
+- The default Greeting Should be "Namasthe From Chembarathi Wayanad, Let me know how i help🌸"
 - If the user asks about booking, say: _"Our team will contact you soon to confirm the booking."_ 
 - ❗ Never confirm a booking yourself. Just provide info or say someone will reach out.`;
 
@@ -46,7 +45,6 @@ Guidelines for reply:
   return response.text();
 }
 
-// WhatsApp Client setup
 const client = new Client({
   authStrategy: new LocalAuth(),
   puppeteer: {
@@ -55,12 +53,10 @@ const client = new Client({
   },
 });
 
-// Express setup
 const app = express();
 const port = process.env.PORT || 4000;
 app.use(express.static(path.join(__dirname, 'images')));
 
-// Room image folders mapped to keywords
 const imageFolders = {
   'deluxe lawn view': 'deluxe_lawn_view',
   'premium mountain view': 'premium_mountain_view',
@@ -70,7 +66,6 @@ const imageFolders = {
   'premium pool mountain view': 'premium_pool_mountain_view'
 };
 
-// Log function to backup to log.txt
 function logToFile(logMessage) {
   const logPath = path.join(__dirname, 'log.txt');
   const timestamp = new Date().toLocaleString();
@@ -78,41 +73,17 @@ function logToFile(logMessage) {
   fs.appendFileSync(logPath, logEntry, 'utf8');
 }
 
-client.on('qr', (qr) => {
-  console.log('QR RECEIVED, scan this with your WhatsApp app:');
-  qrcode.generate(qr, { small: true });
-});
-
-client.on('ready', () => {
-  console.log('✅ WhatsApp client is ready!');
-
-  // Ping every 13 minutes
-  const targetNumber = '918547838091@c.us';
-  setInterval(async () => {
-    try {
-      const chat = await client.getChatById(targetNumber);
-      await chat.sendMessage('👋 Ping to keep the bot alive!');
-      console.log('✅ Ping message sent');
-    } catch (err) {
-      console.error('❌ Ping failed:', err.message);
-    }
-  }, 1 * 60 * 1000);
-});
-
-client.on('message', async (message) => {
+async function handleMessage(message) {
   const chat = await message.getChat();
   const msg = message.body.trim().toLowerCase();
   const sender = message.from;
   const time = new Date().toLocaleString();
 
-  // Log the incoming message to log.txt
   logToFile(`📩 [${time}] Message from ${sender}: ${message.body}`);
 
-  // Define keywords for image trigger
   const imageTriggerWords = ['photo', 'photos', 'images', 'img', 'pics', 'pictures', 'pic'];
   const roomOptions = Object.keys(imageFolders);
 
-  // If the message is a photo/image trigger
   if (imageTriggerWords.some(word => msg.includes(word))) {
     let list = `🖼️ Here are our room options:\n\n`;
     roomOptions.forEach((room, index) => {
@@ -125,7 +96,6 @@ client.on('message', async (message) => {
     return;
   }
 
-  // If the message is a room name or number
   const index = parseInt(msg) - 1;
   const roomKey = index >= 0 && index < roomOptions.length ? roomOptions[index] : msg;
 
@@ -137,13 +107,11 @@ client.on('message', async (message) => {
       const imagePath = path.join(folderPath, image);
       const media = MessageMedia.fromFilePath(imagePath);
       await chat.sendMessage(media);
-
       logToFile(`🖼️ Sent image: ${imagePath}`);
     }
     return;
   }
 
-  // Otherwise use Gemini AI
   try {
     const aiReply = await getAIResponse(msg);
     logToFile(`🤖 Bot Reply (AI):\n${aiReply}`);
@@ -152,9 +120,47 @@ client.on('message', async (message) => {
     console.error('AI Error:', err);
     await chat.sendMessage('⚠️ Sorry, I’m having trouble responding right now. Please try again later.');
   }
+}
+
+client.on('qr', (qr) => {
+  console.log('QR RECEIVED, scan this with your WhatsApp app:');
+  qrcode.generate(qr, { small: true });
 });
 
+client.on('ready', async () => {
+  console.log('✅ WhatsApp client is ready!');
+
+  // Ping every 13 minutes
+  const targetNumber = '918547838091@c.us';
+  setInterval(async () => {
+    try {
+      const chat = await client.getChatById(targetNumber);
+      await chat.sendMessage('👋 Ping to keep the bot alive!');
+      console.log('✅ Ping message sent');
+    } catch (err) {
+      console.error('❌ Ping failed:', err.message);
+    }
+  }, 13 * 60 * 1000);
+
+  // Handle unread messages
+  const chats = await client.getChats();
+  for (const chat of chats) {
+    if (chat.unreadCount > 0) {
+      const messages = await chat.fetchMessages({ limit: chat.unreadCount });
+      for (const message of messages) {
+        if (!message.fromMe) {
+          console.log(`📩 Handling unread message from ${chat.name || chat.id.user}: ${message.body}`);
+          await handleMessage(message);
+        }
+      }
+    }
+  }
+});
+
+client.on('message', handleMessage);
+
 client.initialize();
+
 app.listen(port, () => {
   console.log(`🚀 Express server running on port ${port}`);
 });
