@@ -1,3 +1,3 @@
-2025/04/23-07:02:51.983 daf0 Reusing MANIFEST /workspaces/tommy.ai/.wwebjs_auth/session/Default/Local Storage/leveldb/MANIFEST-000001
-2025/04/23-07:02:51.983 daf0 Recovering log #8
-2025/04/23-07:02:51.983 daf0 Reusing old log /workspaces/tommy.ai/.wwebjs_auth/session/Default/Local Storage/leveldb/000008.log 
+2025/04/23-09:12:06.880 1712 Reusing MANIFEST /workspaces/tommy.ai/.wwebjs_auth/session/Default/Local Storage/leveldb/MANIFEST-000001
+2025/04/23-09:12:06.880 1712 Recovering log #10
+2025/04/23-09:12:06.881 1712 Reusing old log /workspaces/tommy.ai/.wwebjs_auth/session/Default/Local Storage/leveldb/000010.log 

@@ -57,6 +57,11 @@ Guidelines for reply:
 - Be friendly, informative, and under 40 words.
 - Use emojis and formatting (*bold*, _italics_) to improve readability.
 - Prices must be in *bold* (e.g., ₹8,500).
+- Even if rooms have same rates, treat them as separate and list them all.
+- Need only * instead **
+- Don't send various cottages and villas starting from ₹8000.
+- dont send room details in each message, only send them if asked
+- Include Emoji
 - If the user asks about booking, say: _"Our team will contact you as soon as possible."_`;
 
   const result = await model.generateContent({
@@ -148,7 +153,7 @@ client.on('message', async (message) => {
   logToFile(`📩 [${time}] Message from ${sender}: ${message.body}`);
 
   if (!firstMessage[sender]) {
-    const greeting = '🌺 Namasthe from Chembarathi Wayanad! 🌺 How can I assist you today?';
+    const greeting = '🌺 Namasthe from Chembarathi Wayanad! 🌺 ';
     await message.reply(greeting);
     firstMessage[sender] = true;
     logToFile(`🤖 Bot Reply (Greeting):\n${greeting}`);
