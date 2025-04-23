@@ -1,3 +1,4 @@
+import dotenv from 'dotenv';
 import pkg from 'whatsapp-web.js';
 import qrcode from 'qrcode-terminal';
 import fs from 'fs';
@@ -7,14 +8,17 @@ import express from 'express';
 import { GoogleGenerativeAI } from '@google/generative-ai';
 import { createClient } from '@supabase/supabase-js';
 
+// Load environment variables from .env file
+dotenv.config();
+
 const { Client, MessageMedia, LocalAuth } = pkg;
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-// Hardcoded keys
-const SUPABASE_URL = 'https://svfuwhcblrlwgnaeoypo.supabase.co'; // Replace with your Supabase URL
-const SUPABASE_SERVICE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InN2ZnV3aGNibHJsd2duYWVveXBvIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDI0NjYwNDksImV4cCI6MjA1ODA0MjA0OX0.J6RwuRfDt0mJLJtLLpqjQuZN07y00QCBL-trIT370po'; // Replace with your Supabase Service Role Key
-const GEMINI_API_KEY = 'AIzaSyAXqGmUK_QAh2SVoWoIGWi9zV9pxypVnvo'; // Replace with your Gemini API Key
+// Access keys from .env file
+const SUPABASE_URL = process.env.SUPABASE_URL;
+const SUPABASE_SERVICE_KEY = process.env.SUPABASE_KEY;
+const GEMINI_API_KEY = process.env.GEMINI_API_KEY;
 
 // Supabase setup
 const supabase = createClient(SUPABASE_URL, SUPABASE_SERVICE_KEY);
@@ -58,14 +62,13 @@ Guidelines for reply:
 - Use emojis and formatting (*bold*, _italics_) to improve readability.
 - Prices must be in *bold* (e.g., ₹8,500).
 - Even if rooms have same rates, treat them as separate and list them all.
-- Need only * instead **
+- Need only * instead ** 
 - Don't send various cottages and villas starting from ₹8000.
 - dont send room details in each message, only send them if asked
-- Include Emoji
-- If the user asks about booking, say: _"Our team will contact you as soon as possible."_`;
+- Include Emoji`;
 
   const result = await model.generateContent({
-    contents: [{ parts: [{ text: prompt }] }],
+    contents: [{ parts: [{ text: prompt }] }]
   });
 
   const response = await result.response;
