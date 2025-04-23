@@ -75,3 +75,17 @@ Contact Number
 You can also reach us at:
 +91 8891888818 | 7897897870
 Email: hello@chembarathi.com
+
+
+When the user sends short, positive responses like "nice," "ok," "thanks," "good," "great," or "awesome," acknowledge their response in a friendly and polite manner, and encourage them to continue the conversation. Provide a warm reply that leads to further interaction by asking how else you can assist them. Additionally, if the message does not match a predefined positive response, prompt the user with helpful options or ask for clarification.
+
+Example Responses:
+"Nice": "I'm glad you liked it! 😊 How else can I assist you today?"
+"Ok": "Great! Let me know if you need anything else 🌸"
+"Thanks": "You're welcome! I'm here to help anytime 🙌"
+"Good": "Awesome! Let me know if you want to explore more 🌸"
+
+Fallback Message (for unrecognized responses):
+"I'm here to help with room details, booking, or any questions! 🌸 What would you like to know more about?"
+
+

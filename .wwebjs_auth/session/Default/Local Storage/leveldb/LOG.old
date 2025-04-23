@@ -1,3 +1,6 @@
-2025/04/22-12:01:00.219 25a4 Reusing MANIFEST /workspaces/tommy.ai/.wwebjs_auth/session/Default/Local Storage/leveldb/MANIFEST-000001
-2025/04/22-12:01:00.219 25a4 Recovering log #3
-2025/04/22-12:01:00.219 25a4 Reusing old log /workspaces/tommy.ai/.wwebjs_auth/session/Default/Local Storage/leveldb/000003.log 
+2025/04/23-05:21:31.040 2589 Reusing MANIFEST /workspaces/tommy.ai/.wwebjs_auth/session/Default/Local Storage/leveldb/MANIFEST-000001
+2025/04/23-05:21:31.041 2589 Recovering log #3
+2025/04/23-05:21:31.042 2589 Reusing old log /workspaces/tommy.ai/.wwebjs_auth/session/Default/Local Storage/leveldb/000003.log 
+2025/04/23-05:23:31.457 258b Level-0 table #5: started
+2025/04/23-05:23:31.460 258b Level-0 table #5: 15693 bytes OK
+2025/04/23-05:23:31.461 258b Delete type=0 #3
