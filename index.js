@@ -35,8 +35,7 @@ Guidelines for reply:
 - Use emojis and text formatting (like *bold* or _italics_) to improve readability.
 - Use bullet points when listing items.
 - Prices must be in *bold* and formatted like in the context.
-- The default Greeting Should be "🌺 Namasthe from Chembarathi Wayanad! 🌺 How can I assist you today?"
-- If the user asks about booking, say: _"Our team will contact you as soon as possible."_ 
+- If the user asks about booking, say: _"Our team will contact you as soon as possible."_
 - ❗ Never confirm a booking yourself. Just provide info or say someone will reach out.`;
 
   const result = await model.generateContent({
@@ -108,6 +107,9 @@ async function callAPIWithRetry(userMessage, retryCount = 0) {
   }
 }
 
+// Store user first messages
+let firstMessage = {};  // Store if the user has received the greeting
+
 client.on('qr', (qr) => {
   console.log('QR RECEIVED, scan this with your WhatsApp app:');
   qrcode.generate(qr, { small: true });
@@ -138,6 +140,15 @@ client.on('message', async (message) => {
   // Log the incoming message to log.txt
   logToFile(`📩 [${time}] Message from ${sender}: ${message.body}`);
 
+  // Check if it's the user's first message (by user ID or phone number)
+  if (!firstMessage[sender]) {
+    // Send greeting only the first time
+    const greeting = '🌺 Namasthe from Chembarathi Wayanad! 🌺 How can I assist you today?';
+    await message.reply(greeting);  // This sends the greeting
+    firstMessage[sender] = true;  // Mark as greeted
+    logToFile(`🤖 Bot Reply (Greeting):\n${greeting}`);
+  }
+
   // Define keywords for image trigger
   const imageTriggerWords = ['photo', 'photos', 'images', 'img', 'pics', 'pictures', 'pic'];
   const roomOptions = Object.keys(imageFolders);
@@ -151,7 +162,7 @@ client.on('message', async (message) => {
     list += `\n📸 Please reply with the *room name* or *option number* to view images.`;
 
     logToFile(`🤖 Bot Reply (image menu):\n${list}`);
-    await chat.sendMessage(list);
+    await message.reply(list);  // This sends a reply in the same thread
     return;
   }
 
@@ -166,7 +177,7 @@ client.on('message', async (message) => {
     for (const image of images) {
       const imagePath = path.join(folderPath, image);
       const media = MessageMedia.fromFilePath(imagePath);
-      await chat.sendMessage(media);
+      await message.reply(media);  // This sends the image in the same thread
 
       logToFile(`🖼️ Sent image: ${imagePath}`);
     }
@@ -177,10 +188,10 @@ client.on('message', async (message) => {
   try {
     const aiReply = await callAPIWithRetry(msg);
     logToFile(`🤖 Bot Reply (AI):\n${aiReply}`);
-    await chat.sendMessage(aiReply);
+    await message.reply(aiReply);  // This sends a reply in the same thread
   } catch (err) {
     console.error('AI Error:', err);
-    await chat.sendMessage('Our team will contact you as soon as possible.'); // Updated fallback message
+    await message.reply('Our team will contact you as soon as possible.'); // Updated fallback message
   }
 });
 
