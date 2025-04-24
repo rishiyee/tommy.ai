@@ -11,48 +11,136 @@ import { createClient } from '@supabase/supabase-js';
 // Load environment variables from .env file
 dotenv.config();
 
+// Constants and Configurations
 const { Client, MessageMedia, LocalAuth } = pkg;
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
+const MAX_HISTORY_LENGTH = 10;
+const PORT = process.env.PORT || 4000;
+const PING_INTERVAL = 13 * 60 * 1000; // 13 minutes
+const TARGET_NUMBER = '918547838091@c.us';
 
-// Access keys from .env file
-const SUPABASE_URL = process.env.SUPABASE_URL;
-const SUPABASE_SERVICE_KEY = process.env.SUPABASE_KEY;
-const GEMINI_API_KEY = process.env.GEMINI_API_KEY;
+// Environment Variables
+const {
+  SUPABASE_URL,
+  SUPABASE_KEY: SUPABASE_SERVICE_KEY,
+  GEMINI_API_KEY
+} = process.env;
 
-// Supabase setup
+// Initialize Services
 const supabase = createClient(SUPABASE_URL, SUPABASE_SERVICE_KEY);
-
-// Gemini AI setup
 const genAI = new GoogleGenerativeAI(GEMINI_API_KEY);
 const model = genAI.getGenerativeModel({ model: 'gemini-1.5-flash' });
+const userConversations = new Map();
+const firstMessage = new Map();
+
+// Image Configuration
+const imageFolders = {
+  'deluxe lawn view': 'deluxe_lawn_view',
+  'premium mountain view': 'premium_mountain_view',
+  'pool villa': 'pool_villa',
+  'deluxe pool forest view': 'deluxe_pool_forest_view',
+  'honeymoon suite': 'honeymoon_suite',
+  'premium pool mountain view': 'premium_pool_mountain_view'
+};
+
+const imageTriggerWords = ['photo', 'photos', 'images', 'img', 'pics', 'pictures', 'pic'];
+const bookingKeywords = ['book', 'booking', 'reserve', 'reservation', 'check-in', 'check in', 'checkin'];
+
+// Add this constant at the top with other constants
+const BOOKING_RESPONSE = `🌸 Thank you for choosing Chembarathi Wayanad!
+To proceed with your booking, please share the following details:
+👤 Name
+🏡 Preferred Room Type
+📅 Check-in Date
+📅 Check-out Date
+👨‍👩‍👧‍👦 Number of Guests (Adults & Children)
+
+*Please contact us directly at:*
+📞 *Phone*: +91 85478 38091
+📧 *Email*: info@chembarathiwayanad.com`;
+
+// Utility Functions
+function logToFile(logMessage) {
+  const logPath = path.join(__dirname, 'log.txt');
+  const timestamp = new Date().toLocaleString();
+  const logEntry = `[${timestamp}] ${logMessage}\n`;
+  fs.appendFileSync(logPath, logEntry, 'utf8');
+}
 
 async function fetchRoomDetailsFromSupabase() {
-  const { data, error } = await supabase
-    .from('rooms')
-    .select('room_name, rate, description, size, check_in_time, check_out_time')
-    .order('rate', { ascending: true });
+  try {
+    const { data, error } = await supabase
+      .from('rooms')
+      .select('room_name, rate, description, size, check_in_time, check_out_time')
+      .order('rate', { ascending: true });
 
-  if (error) {
+    if (error) throw error;
+
+    return data.map(room => (
+      `🏡 *${room.room_name}* (${room.size} sq. ft.)\n` +
+      `💸 Rate: *₹${room.rate}*\n` +
+      `📝 ${room.description}\n` +
+      `🕐 Check-in: ${room.check_in_time}, Check-out: ${room.check_out_time}\n`
+    )).join('\n\n');
+  } catch (error) {
     console.error('Error fetching room details:', error);
     return '';
   }
-
-  return data.map(room => (
-    `🏡 *${room.room_name}* (${room.size} sq. ft.)\n` +
-    `💸 Rate: *₹${room.rate}*\n` +
-    `📝 ${room.description}\n` +
-    `🕐 Check-in: ${room.check_in_time}, Check-out: ${room.check_out_time}\n`
-  )).join('\n\n');
 }
 
-async function getAIResponse(userMessage) {
-  const dynamicContext = await fetchRoomDetailsFromSupabase();
+// AI Response Handling
+async function getAIResponse(userMessage, sender) {
+  if (!userConversations.has(sender)) {
+    userConversations.set(sender, []);
+  }
+  const conversationHistory = userConversations.get(sender);
 
-  const prompt = `You are a helpful and polite assistant for a boutique resort called Chembarathi Wayanad.
+  // Handle booking requests
+  if (bookingKeywords.some(keyword => userMessage.toLowerCase().includes(keyword))) {
+    updateConversationHistory(conversationHistory, userMessage, BOOKING_RESPONSE);
+    return BOOKING_RESPONSE;
+  }
+
+  try {
+    const dynamicContext = await fetchRoomDetailsFromSupabase();
+    conversationHistory.push({ role: 'user', content: userMessage });
+    
+    while (conversationHistory.length > MAX_HISTORY_LENGTH) {
+      conversationHistory.shift();
+    }
+
+    const historyText = conversationHistory
+      .map(msg => `${msg.role === 'user' ? 'User' : 'Assistant'}: ${msg.content}`)
+      .join('\n');
+
+    const prompt = generatePrompt(dynamicContext, historyText, userMessage);
+    const result = await model.generateContent({
+      contents: [{ parts: [{ text: prompt }] }]
+    });
+
+    const aiReply = result.response.text();
+    updateConversationHistory(conversationHistory, null, aiReply);
+    return aiReply;
+  } catch (error) {
+    console.error('AI Response Error:', error);
+    throw error;
+  }
+}
+
+function updateConversationHistory(history, userMessage, aiReply) {
+  if (userMessage) history.push({ role: 'user', content: userMessage });
+  if (aiReply) history.push({ role: 'assistant', content: aiReply });
+}
+
+function generatePrompt(dynamicContext, historyText, userMessage) {
+  return `You are a helpful and polite assistant for a boutique resort called Chembarathi Wayanad.
 
 Room Details:
 ${dynamicContext}
+
+Previous conversation:
+${historyText}
 
 User asked:
 ${userMessage}
@@ -65,16 +153,84 @@ Guidelines for reply:
 - Need only * instead ** 
 - Don't send various cottages and villas starting from ₹8000.
 - dont send room details in each message, only send them if asked
-- Include Emoji`;
-
-  const result = await model.generateContent({
-    contents: [{ parts: [{ text: prompt }] }]
-  });
-
-  const response = await result.response;
-  return response.text();
+- Include Emoji
+- Maintain conversation context and refer to previous messages when relevant
+- NEVER provide booking assistance or accept bookings
+- If user asks about booking, direct them to contact via phone or email
+- Do not share the booking form or booking details`;
 }
 
+// Message Handling
+async function handleImageRequest(message) {
+  const roomOptions = Object.keys(imageFolders);
+  let list = `🖼️ Here are our room options:\n\n`;
+  roomOptions.forEach((room, index) => {
+    list += `${index + 1}. ${room.charAt(0).toUpperCase() + room.slice(1)}\n`;
+  });
+  list += `\n📸 Please reply with the *room name* or *option number* to view images.`;
+  logToFile(`🤖 Bot Reply (image menu):\n${list}`);
+  await message.reply(list);
+}
+
+async function sendRoomImages(message, roomKey) {
+  const folderPath = path.join(__dirname, 'images', imageFolders[roomKey]);
+  try {
+    const images = fs.readdirSync(folderPath);
+    for (const image of images) {
+      const imagePath = path.join(folderPath, image);
+      const media = MessageMedia.fromFilePath(imagePath);
+      await message.reply(media);
+      logToFile(`🖼️ Sent image: ${imagePath}`);
+    }
+  } catch (error) {
+    console.error('Error sending images:', error);
+    await message.reply('Sorry, there was an error loading the images.');
+  }
+}
+
+async function handleMessage(message) {
+  const msg = message.body.trim().toLowerCase();
+  const sender = message.from;
+  const time = new Date().toLocaleString();
+
+  logToFile(`📩 [${time}] Message from ${sender}: ${message.body}`);
+
+  // Handle first-time messages
+  if (!firstMessage.has(sender)) {
+    const greeting = '🌺 Namasthe from Chembarathi Wayanad! 🌺 ';
+    await message.reply(greeting);
+    firstMessage.set(sender, true);
+    logToFile(`🤖 Bot Reply (Greeting):\n${greeting}`);
+  }
+
+  // Handle image requests
+  if (imageTriggerWords.some(word => msg.includes(word))) {
+    await handleImageRequest(message);
+    return;
+  }
+
+  // Handle room selection
+  const roomOptions = Object.keys(imageFolders);
+  const index = parseInt(msg) - 1;
+  const roomKey = index >= 0 && index < roomOptions.length ? roomOptions[index] : msg;
+
+  if (imageFolders[roomKey]) {
+    await sendRoomImages(message, roomKey);
+    return;
+  }
+
+  // Handle general queries
+  try {
+    const aiReply = await getAIResponse(msg, sender);
+    logToFile(`🤖 Bot Reply (AI):\n${aiReply}`);
+    await message.reply(aiReply);
+  } catch (error) {
+    console.error('Message handling error:', error);
+    await message.reply('Our team will contact you as soon as possible.');
+  }
+}
+
+// WhatsApp Client Setup
 const client = new Client({
   authStrategy: new LocalAuth(),
   puppeteer: {
@@ -83,51 +239,6 @@ const client = new Client({
   },
 });
 
-const app = express();
-const port = process.env.PORT || 4000;
-app.use(express.static(path.join(__dirname, 'images')));
-
-const imageFolders = {
-  'deluxe lawn view': 'deluxe_lawn_view',
-  'premium mountain view': 'premium_mountain_view',
-  'pool villa': 'pool_villa',
-  'deluxe pool forest view': 'deluxe_pool_forest_view',
-  'honeymoon suite': 'honeymoon_suite',
-  'premium pool mountain view': 'premium_pool_mountain_view'
-};
-
-function logToFile(logMessage) {
-  const logPath = path.join(__dirname, 'log.txt');
-  const timestamp = new Date().toLocaleString();
-  const logEntry = `[${timestamp}] ${logMessage}\n`;
-  fs.appendFileSync(logPath, logEntry, 'utf8');
-}
-
-async function callAPIWithRetry(userMessage, retryCount = 0) {
-  try {
-    const aiReply = await getAIResponse(userMessage);
-    logToFile(`🤖 Bot Reply (AI):\n${aiReply}`);
-    return aiReply;
-  } catch (error) {
-    if (error.response && error.response.status === 429) {
-      const retryDelay = error.response.data.error.details.find(detail => detail['@type'] === 'type.googleapis.com/google.rpc.RetryInfo').retryDelay;
-      const delay = parseInt(retryDelay) * 1000;
-      await new Promise(resolve => setTimeout(resolve, delay));
-      if (retryCount < 3) {
-        return callAPIWithRetry(userMessage, retryCount + 1);
-      } else {
-        console.error('Max retry attempts reached.');
-        return 'Our team will contact you as soon as possible.';
-      }
-    } else {
-      console.error('API Error:', error.message);
-      return 'Our team will contact you as soon as possible.';
-    }
-  }
-}
-
-let firstMessage = {};
-
 client.on('qr', (qr) => {
   console.log('QR RECEIVED, scan this with your WhatsApp app:');
   qrcode.generate(qr, { small: true });
@@ -135,74 +246,25 @@ client.on('qr', (qr) => {
 
 client.on('ready', () => {
   console.log('✅ WhatsApp client is ready!');
-  const targetNumber = '918547838091@c.us';
   setInterval(async () => {
     try {
-      const chat = await client.getChatById(targetNumber);
+      const chat = await client.getChatById(TARGET_NUMBER);
       await chat.sendMessage('👋 Ping to keep the bot alive!');
       console.log('✅ Ping message sent');
     } catch (err) {
       console.error('❌ Ping failed:', err.message);
     }
-  }, 13 * 60 * 1000);
+  }, PING_INTERVAL);
 });
 
-client.on('message', async (message) => {
-  const chat = await message.getChat();
-  const msg = message.body.trim().toLowerCase();
-  const sender = message.from;
-  const time = new Date().toLocaleString();
+client.on('message', handleMessage);
 
-  logToFile(`📩 [${time}] Message from ${sender}: ${message.body}`);
+// Express Server Setup
+const app = express();
+app.use(express.static(path.join(__dirname, 'images')));
 
-  if (!firstMessage[sender]) {
-    const greeting = '🌺 Namasthe from Chembarathi Wayanad! 🌺 ';
-    await message.reply(greeting);
-    firstMessage[sender] = true;
-    logToFile(`🤖 Bot Reply (Greeting):\n${greeting}`);
-  }
-
-  const imageTriggerWords = ['photo', 'photos', 'images', 'img', 'pics', 'pictures', 'pic'];
-  const roomOptions = Object.keys(imageFolders);
-
-  if (imageTriggerWords.some(word => msg.includes(word))) {
-    let list = `🖼️ Here are our room options:\n\n`;
-    roomOptions.forEach((room, index) => {
-      list += `${index + 1}. ${room.charAt(0).toUpperCase() + room.slice(1)}\n`;
-    });
-    list += `\n📸 Please reply with the *room name* or *option number* to view images.`;
-    logToFile(`🤖 Bot Reply (image menu):\n${list}`);
-    await message.reply(list);
-    return;
-  }
-
-  const index = parseInt(msg) - 1;
-  const roomKey = index >= 0 && index < roomOptions.length ? roomOptions[index] : msg;
-
-  if (imageFolders[roomKey]) {
-    const folderPath = path.join(__dirname, 'images', imageFolders[roomKey]);
-    const images = fs.readdirSync(folderPath);
-
-    for (const image of images) {
-      const imagePath = path.join(folderPath, image);
-      const media = MessageMedia.fromFilePath(imagePath);
-      await message.reply(media);
-      logToFile(`🖼️ Sent image: ${imagePath}`);
-    }
-    return;
-  }
-
-  try {
-    const aiReply = await callAPIWithRetry(msg);
-    logToFile(`🤖 Bot Reply (AI):\n${aiReply}`);
-    await message.reply(aiReply);
-  } catch (err) {
-    console.error('AI Error:', err);
-    await message.reply('Our team will contact you as soon as possible.');
-  }
-});
-
+// Initialize Services
 client.initialize();
-app.listen(port, () => {
-  console.log(`🚀 Express server running on port ${port}`);
+app.listen(PORT, () => {
+  console.log(`🚀 Express server running on port ${PORT}`);
 });
