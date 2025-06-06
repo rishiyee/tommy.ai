@@ -19,30 +19,72 @@ const botContext = fs.readFileSync(contextPath, 'utf8');
 const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
 const model = genAI.getGenerativeModel({ model: 'gemini-1.5-flash' });
 
-async function getAIResponse(userMessage) {
+// Store message threads for each WhatsApp number
+const messageThreads = new Map();
+
+// Function to get or create a thread for a number
+function getThread(number) {
+  if (!messageThreads.has(number)) {
+    messageThreads.set(number, []);
+  }
+  return messageThreads.get(number);
+}
+
+// Function to add message to thread
+function addToThread(number, message, isBot = false) {
+  const thread = getThread(number);
+  thread.push({
+    message,
+    timestamp: new Date(),
+    isBot
+  });
+  // Keep only last 10 messages in thread
+  if (thread.length > 10) {
+    thread.shift();
+  }
+}
+
+async function getAIResponse(userMessage, context) {
   const prompt = `You are a helpful and polite assistant for a boutique resort called Chembarathi Wayanad.
 
 Context:
 ${botContext}
 
+Recent conversation:
+${context}
+
 User asked:
 ${userMessage}
 
-Guidelines for reply:
-- Be friendly, informative, and under 40 words.
-- Use emojis and text formatting (like *bold* or _italics_) to improve readability.
-- Use bullet points when listing items.
-- Prices must be in *bold* and formatted like in the context.
-- The default Greeting Should be "Namasthe From Chembarathi Wayanad, Let me know how i help🌸"
-- If the user asks about booking, say: _"Our team will contact you soon to confirm the booking."_ 
-- ❗ Never confirm a booking yourself. Just provide info or say someone will reach out.`;
+Guidelines for response:
+1. If this is the first message in the conversation (no context), provide this greeting:
+"Namaste! 😊 Welcome to Chembarathi Wayanad! I'm your virtual assistant and I can help you with:
+• Viewing room photos and details
+• Checking room availability and pricing
+• Providing information about our amenities
+• Answering questions about our location and services
+• Assisting with booking inquiries
 
-  const result = await model.generateContent({
-    contents: [{ parts: [{ text: prompt }] }],
-  });
+How may I assist you today?"
 
-  const response = await result.response;
-  return response.text();
+2. For all other responses:
+- Be friendly, informative, and concise
+- Use emojis and text formatting (like *bold* or _italics_) to improve readability
+- Use bullet points when listing items
+- Prices must be in *bold* and formatted like in the context
+- If the user asks about booking, say: _"Our team will contact you soon to confirm the booking."_
+- Never confirm a booking yourself. Just provide info or say someone will reach out.
+
+Please provide a helpful and relevant response based on these guidelines.`;
+
+  try {
+    const result = await model.generateContent(prompt);
+    const response = await result.response;
+    return response.text();
+  } catch (error) {
+    console.error('Error generating AI response:', error);
+    throw error;
+  }
 }
 
 const client = new Client({
@@ -79,6 +121,9 @@ async function handleMessage(message) {
   const sender = message.from;
   const time = new Date().toLocaleString();
 
+  // Add user message to thread
+  addToThread(sender, message.body);
+
   logToFile(`📩 [${time}] Message from ${sender}: ${message.body}`);
 
   const imageTriggerWords = ['photo', 'photos', 'images', 'img', 'pics', 'pictures', 'pic'];
@@ -93,6 +138,7 @@ async function handleMessage(message) {
 
     logToFile(`🤖 Bot Reply (image menu):\n${list}`);
     await chat.sendMessage(list);
+    addToThread(sender, list, true);
     return;
   }
 
@@ -108,17 +154,25 @@ async function handleMessage(message) {
       const media = MessageMedia.fromFilePath(imagePath);
       await chat.sendMessage(media);
       logToFile(`🖼️ Sent image: ${imagePath}`);
+      addToThread(sender, `[Image: ${image}]`, true);
     }
     return;
   }
 
   try {
-    const aiReply = await getAIResponse(msg);
+    // Get conversation context from thread
+    const thread = getThread(sender);
+    const context = thread.map(msg => `${msg.isBot ? 'Bot' : 'User'}: ${msg.message}`).join('\n');
+    
+    const aiReply = await getAIResponse(msg, context);
     logToFile(`🤖 Bot Reply (AI):\n${aiReply}`);
     await chat.sendMessage(aiReply);
+    addToThread(sender, aiReply, true);
   } catch (err) {
     console.error('AI Error:', err);
-    await chat.sendMessage('⚠️ Sorry, I’m having trouble responding right now. Please try again later.');
+    const errorMsg = '⚠️ Sorry, I\'m having trouble responding right now. Please try again later.';
+    await chat.sendMessage(errorMsg);
+    addToThread(sender, errorMsg, true);
   }
 }
 
