@@ -205,7 +205,7 @@ client.on('ready', async () => {
     } catch (err) {
       console.error('❌ Ping failed:', err.message);
     }
-  }, 13 * 60 * 1000);
+  }, 60 * 60 * 1000);
 
   // Handle unread messages
   const chats = await client.getChats();
