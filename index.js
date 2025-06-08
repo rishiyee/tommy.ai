@@ -74,7 +74,11 @@ How may I assist you today?"
 - Prices must be in *bold* and formatted like in the context
 - If the user asks about booking, say: _"Our team will contact you soon to confirm the booking."_
 - Never confirm a booking yourself. Just provide info or say someone will reach out.
+<<<<<<< HEAD
+- reply should be under 20 words
+=======
 - Don't use **hello** for bold text; use *hello* instead.
+>>>>>>> 05c8254584875e99b8c737a964ab3fd44b6512f5
 
 Please provide a helpful and relevant response based on these guidelines.`;
 
@@ -121,6 +125,15 @@ async function handleMessage(message) {
   const msg = message.body.trim().toLowerCase();
   const sender = message.from;
   const time = new Date().toLocaleString();
+
+  // Check if message is audio
+  if (message.hasMedia && message.type === 'ptt') {
+    const audioResponse = "Our team will contact you shortly.";
+    logToFile(`🎵 [${time}] Audio message received from ${sender}`);
+    await chat.sendMessage(audioResponse);
+    addToThread(sender, audioResponse, true);
+    return;
+  }
 
   // Add user message to thread
   addToThread(sender, message.body);
